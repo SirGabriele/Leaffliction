@@ -4,5 +4,5 @@
 
 ### Requirements
 
-- python3.10
+- python3.13.5
 - make
