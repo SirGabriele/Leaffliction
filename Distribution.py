@@ -1,7 +1,8 @@
 import argparse
 import os
-from pathlib import Path
 
+from pathlib import Path
+from source.balance_data_set import balance_data_set
 from source.count_images import count_images
 from source.plot_charts import plot_charts
 
@@ -27,15 +28,16 @@ def argparse_init() -> argparse.ArgumentParser:
 
 def main():
     parser: argparse.ArgumentParser = argparse_init()
-    root_directory: str = parser.parse_args().folder
-    root_name: str = Path(root_directory).name
+    root_directory_name: str = parser.parse_args().folder
+    root_directory: Path = Path(root_directory_name)
 
     labels, counts = count_images(root_directory)
     if not labels:
         print("No subfolder containing JPG images found.")
         return
 
-    plot_charts(root_name, labels, counts)
+    # plot_charts(root_name, labels, counts)
+    balance_data_set(root_directory, counts)
 
 
 if __name__ == '__main__':
