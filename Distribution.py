@@ -2,7 +2,6 @@ import argparse
 import os
 
 from pathlib import Path
-from source.balance_data_set import balance_data_set
 from source.count_images import count_images
 from source.plot_charts import plot_charts
 
@@ -16,7 +15,7 @@ def existing_folder(path: str) -> str:
 def argparse_init() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description='Run Distribution program with an input folder',
-        usage="python3.10 Distribution.py <folder>"
+        usage="python3.13 Distribution.py <folder>"
     )
     parser.add_argument(
         'folder',
@@ -36,8 +35,7 @@ def main():
         print("No subfolder containing JPG images found.")
         return
 
-    # plot_charts(root_name, labels, counts)
-    balance_data_set(root_directory, counts)
+    plot_charts(root_directory_name, labels, counts)
 
 
 if __name__ == '__main__':
