@@ -2,7 +2,7 @@ import argparse
 import os
 
 from pathlib import Path
-from source.augment import augment_image
+from source.augment_image import augment_image
 
 
 def valid_file(path: str) -> str:

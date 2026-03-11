@@ -1,4 +1,8 @@
-AUGMENTED_DIRECTORY="augmented_directory"
-BLUR_KERNEL_SIZE=5
+AUGMENTED_DIRECTORY = "augmented_directory"
+
+BLUR_KERNEL_SIZE = 5
+
 # 0 for horizontal rotation, > 0 for vertical rotation, < 0 for both
-FLIP_ROTATION_AXIS=1
+FLIP_ROTATION_AXIS = 1
+
+SCALE_FACTOR = 1.5
