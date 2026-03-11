@@ -8,8 +8,8 @@ from source.generate_augmented_file_name import generate_augmented_file_name
 from source.save_image import save_filtered_image
 
 
-def rotate(augmented_directory: Path, image_file_path: Path, image: np.ndarray) -> (
-        np.ndarray):
+def rotate(augmented_directory: Path, image_file_path: Path,
+           image: np.ndarray) -> np.ndarray:
     height, width = image.shape[:2]
     center = (width // 2, height // 2)
 

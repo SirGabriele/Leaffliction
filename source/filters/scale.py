@@ -8,10 +8,10 @@ from source.generate_augmented_file_name import generate_augmented_file_name
 from source.save_image import save_filtered_image
 
 
-def scale(augmented_directory: Path, image_file_path: Path, image: np.ndarray) -> (
-        np.ndarray):
-    # Scales the image and then crops the resulting image to obtain an image the
-    # size of the original one
+def scale(augmented_directory: Path, image_file_path: Path,
+          image: np.ndarray) -> np.ndarray:
+    # Scales the image and then crops the resulting image to obtain an image
+    # the size of the original one
     scaled_image = cv2.resize(
         image,
         dsize=None,
