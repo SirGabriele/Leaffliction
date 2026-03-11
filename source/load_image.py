@@ -1,19 +1,19 @@
+import numpy as np
+
 from pathlib import Path
 from PIL import Image, UnidentifiedImageError
-
-import numpy as np
 
 
 def load_image(image_path: Path) -> np.ndarray:
     try:
         with Image.open(image_path) as img:
-            if img.format.upper() not in ["PNG", "JPEG", ]:
+            if img.format.lower() != "jpeg":
                 raise AssertionError(
-                    "Only formats accepted are PNG, JPG, and JPEG"
+                    "Only format accepted is JPEG/JPG"
                 )
 
             image = np.array(img)
     except UnidentifiedImageError:
-        raise AssertionError("Only formats accepted are PNG, JPG, and JPEG")
+        raise AssertionError("Only format accepted is JPEG/JPG")
 
     return image

@@ -1,7 +1,7 @@
-from pathlib import Path
-
 import cv2
 import numpy as np
+
+from pathlib import Path
 
 
 def save_filtered_image(augmented_directory: Path, image_file_path: Path,

@@ -6,10 +6,8 @@ from source.augment_image import augment_image
 
 
 def valid_file(path: str) -> str:
-    # Asserts that file exists
     if not os.path.isfile(path):
         raise argparse.ArgumentTypeError(f"File '{path}' does not exist")
-    # Asserts that file is readable
     if not os.access(path, os.R_OK):
         raise PermissionError(f"Read permission is not granted for '{path}'")
     return path

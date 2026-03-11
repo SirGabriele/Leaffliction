@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 
 from matplotlib import pyplot as plt
@@ -14,28 +16,24 @@ from source.filters.scale import scale
 from source.load_image import load_image
 
 
-def display_images(original_img: np.ndarray, blur_img: np.ndarray,
-                   flip_img: np.ndarray, scale_img: np.ndarray,
-                   rotate_img: np.ndarray, illuminate_img: np.ndarray,
-                   project_img: np.ndarray) -> None:
-    images = [
-        blur_img, flip_img, scale_img, rotate_img, illuminate_img, project_img
-    ]
-    titles = [
-        "Blur", "Flip", "Scaling", "Rotation", "Illumination", "Projection"
-    ]
-
-    nb_rows = 3
+def display_images(original_img: np.ndarray,
+                   augmented_imgs: dict[str, np.ndarray]) -> None:
+    # Displays 3 images per rows, plus one row for the original image
     nb_cols = 3
+    nb_rows = len(augmented_imgs) // nb_cols + 1
+    second_row_first_column_idx = nb_cols + 1
 
-    plt.figure(figsize=(12, 6))
-
-    plt.subplot(nb_rows, nb_cols, 2)
+    # Places original image in the middle of the first row
+    plt.subplot(
+        nb_rows, nb_cols, math.ceil(len(augmented_imgs) / nb_cols)
+    )
     plt.imshow(original_img)
     plt.title("Original")
     plt.axis("off")
 
-    for i, (img, title) in enumerate(zip(images, titles), start=4):
+    for i, (title, img) in enumerate(
+            augmented_imgs.items(), start=second_row_first_column_idx
+    ):
         plt.subplot(nb_rows, nb_cols, i)
         plt.imshow(img)
         plt.title(title)
@@ -46,30 +44,19 @@ def display_images(original_img: np.ndarray, blur_img: np.ndarray,
 
 
 def augment_image(image_file_path: Path):
-    # Creates the augmented directory that match the image file path
     augmented_directory: Path = create_augmented_directory(image_file_path)
 
-    # Loads the image data
     image: np.ndarray = load_image(image_file_path)
 
-    # Applies filters
-    blurred_img: np.ndarray = blur(augmented_directory, image_file_path, image)
-    flipped_img: np.ndarray = flip(augmented_directory, image_file_path, image)
-    scaled_img: np.ndarray = scale(augmented_directory, image_file_path, image)
-    rotated_img: np.ndarray \
-        = rotate(augmented_directory, image_file_path, image)
-    illuminated_img: np.ndarray = illuminate(
-        augmented_directory, image_file_path, image
-    )
-    projected_img = project(augmented_directory, image_file_path, image)
+    augmented_imgs: dict[str, np.ndarray] = {
+        "Blur": blur(augmented_directory, image_file_path, image),
+        "Flip": flip(augmented_directory, image_file_path, image),
+        "Scaling": scale(augmented_directory, image_file_path, image),
+        "Rotation": rotate(augmented_directory, image_file_path, image),
+        "Illumination": illuminate(augmented_directory, image_file_path,
+                                   image),
+        "Projection": project(augmented_directory, image_file_path, image)
+    }
 
     if DISPLAY_AUGMENTED_IMAGES:
-        display_images(
-            original_img=image,
-            blur_img=blurred_img,
-            flip_img=flipped_img,
-            scale_img=scaled_img,
-            rotate_img=rotated_img,
-            illuminate_img=illuminated_img,
-            project_img=projected_img
-        )
+        display_images(original_img=image, augmented_imgs=augmented_imgs)

@@ -1,8 +1,7 @@
-from pathlib import Path
-
 import cv2
 import numpy as np
 
+from pathlib import Path
 from config import PROJECTION_TOP_LEFT_FACTORS
 from config import PROJECTION_TOP_RIGHT_FACTORS
 from config import PROJECTION_BOTTOM_LEFT_FACTORS
@@ -24,7 +23,6 @@ def project(augmented_directory: Path, image_file_path: Path,
         [0, y_max - 1]
     ])
 
-    # The projection factors for all corners
     tl_x_factor, tl_y_factor = PROJECTION_TOP_LEFT_FACTORS
     tr_x_factor, tr_y_factor = PROJECTION_TOP_RIGHT_FACTORS
     br_x_factor, br_y_factor = PROJECTION_BOTTOM_RIGHT_FACTORS
@@ -38,12 +36,10 @@ def project(augmented_directory: Path, image_file_path: Path,
         [x_max * bl_x_factor, y_max * bl_y_factor]
     ])
 
-    # Get the perspective transform matrix
     transformation_matrix = cv2.getPerspectiveTransform(
         corners_src_coord, corners_dst_coord
     )
 
-    # Apply the warpPerspective to get the projective image
     projected_img = cv2.warpPerspective(
         image, transformation_matrix, (x_max, y_max)
     )
@@ -53,7 +49,6 @@ def project(augmented_directory: Path, image_file_path: Path,
         filter_suffix="Projection"
     )
 
-    # Saves the filtered image in the augmented directory
     save_filtered_image(augmented_directory, image_file_path, projected_img)
 
     return projected_img
