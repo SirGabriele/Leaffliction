@@ -10,8 +10,8 @@
 
 # Distribution
 
-The distribution program reads the specified folder and its direct 
-subfolders.
+The distribution program reads the specified directory and its direct 
+subdirectories.
 
 ```text
 $ find images/ -maxdepth 2 -type d
@@ -27,10 +27,10 @@ images/Grape_Black_rot
 ```
 
 It will display one pie chart and one bar chart that show the amount of 
-files per subfolder.
+files per subdirectory.
 
 ```python3.13
-venv/bin/python3.13 Distribution.py <data_set_folder>
+venv/bin/python3.13 Distribution.py <data_set_directory>
 ```
 
 ![Distribution charts](resource/distribution_charts.png)
