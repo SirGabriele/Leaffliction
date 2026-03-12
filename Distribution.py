@@ -6,7 +6,7 @@ from source.count_images import count_images
 from source.plot_charts import plot_charts
 
 
-def existing_folder(path: str) -> str:
+def existing_directory(path: str) -> str:
     if not os.path.isdir(path):
         raise argparse.ArgumentTypeError(f"Directory '{path}' does not exist")
     return path
@@ -14,12 +14,12 @@ def existing_folder(path: str) -> str:
 
 def argparse_init() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description='Run Distribution program with an input folder',
-        usage="python3.13 Distribution.py <folder>"
+        description='Run Distribution program with an input directory',
+        usage="python3.13 Distribution.py <directory>"
     )
     parser.add_argument(
-        'folder',
-        type=existing_folder,
+        'directory',
+        type=existing_directory,
         help='Path to the root directory'
     )
     return parser
@@ -27,12 +27,12 @@ def argparse_init() -> argparse.ArgumentParser:
 
 def main():
     parser: argparse.ArgumentParser = argparse_init()
-    root_directory_name: str = parser.parse_args().folder
+    root_directory_name: str = parser.parse_args().directory
     root_directory: Path = Path(root_directory_name)
 
     labels, counts = count_images(root_directory)
     if not labels:
-        print("No subfolder containing JPG images found.")
+        print("No subdirectory containing JPG images found.")
         return
 
     plot_charts(root_directory_name, labels, counts)
