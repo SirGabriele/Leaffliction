@@ -4,8 +4,9 @@ import numpy as np
 from pathlib import Path
 
 
-def save_filtered_image(augmented_directory: Path, image_file_path: Path,
-                        filtered_image: np.ndarray) -> None:
+def save_image_in_augmented_directory(augmented_directory: Path,
+                                      image_file_path: Path,
+                                      filtered_image: np.ndarray) -> None:
     # We use Pillow to open the image, which channel order is RGB.
     # However, OpenCV uses BGR, so we have to convert the image data to BGR
     # before saving it

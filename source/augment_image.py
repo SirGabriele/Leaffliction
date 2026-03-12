@@ -14,6 +14,7 @@ from source.filters.illuminate import illuminate
 from source.filters.rotate import rotate
 from source.filters.scale import scale
 from source.load_image import load_image
+from source.save_image import save_image_in_augmented_directory
 
 
 def display_images(original_img: np.ndarray,
@@ -59,6 +60,10 @@ def augment_image(image_file_path: Path):
                                    image),
         "Projection": project(augmented_directory, image_file_path, image)
     }
+
+    save_image_in_augmented_directory(
+        augmented_directory, image_file_path, image
+    )
 
     if DISPLAY_AUGMENTED_IMAGES:
         display_images(original_img=image, augmented_imgs=augmented_imgs)
