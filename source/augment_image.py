@@ -23,6 +23,8 @@ def display_images(original_img: np.ndarray,
     nb_rows = len(augmented_imgs) // nb_cols + 1
     second_row_first_column_idx = nb_cols + 1
 
+    plt.figure(num="Augmented images")
+
     # Places original image in the middle of the first row
     plt.subplot(
         nb_rows, nb_cols, math.ceil(len(augmented_imgs) / nb_cols)
