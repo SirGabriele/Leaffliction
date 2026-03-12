@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 from config import ILLUMINATE_ALPHA, ILLUMINATE_BETA
 from source.generate_augmented_file_name import generate_augmented_file_name
-from source.save_image import save_filtered_image
+from source.save_image import save_image_in_augmented_directory
 
 
 def illuminate(augmented_directory: Path, image_file_path: Path,
@@ -21,7 +21,7 @@ def illuminate(augmented_directory: Path, image_file_path: Path,
         filter_suffix="Illuminate"
     )
 
-    save_filtered_image(
+    save_image_in_augmented_directory(
         augmented_directory, image_file_path, illuminated_image
     )
 

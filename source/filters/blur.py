@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 from config import BLUR_KERNEL_SIZE
 from source.generate_augmented_file_name import generate_augmented_file_name
-from source.save_image import save_filtered_image
+from source.save_image import save_image_in_augmented_directory
 
 
 def blur(augmented_directory: Path, image_file_path: Path, image: np.ndarray) \
@@ -18,6 +18,8 @@ def blur(augmented_directory: Path, image_file_path: Path, image: np.ndarray) \
         filter_suffix="Blur"
     )
 
-    save_filtered_image(augmented_directory, image_file_path, blurred_image)
+    save_image_in_augmented_directory(
+        augmented_directory, image_file_path, blurred_image
+    )
 
     return blurred_image
