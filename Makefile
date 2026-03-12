@@ -1,7 +1,6 @@
 # Paths names
 REQUIREMENTS_FILE = requirements.txt
 VENV_DIR = venv
-AUGMENTED_DIRECTORY = augmented_directory
 
 # Executable
 PYTHON_VERSION = python3.13
@@ -21,7 +20,7 @@ clean:
 	rm -rf $(SHARED_VALUES_FILE)
 
 fclean:
-	rm -rf __pycache__ $(VENV_DIR) $(AUGMENTED_DIRECTORY)
+	rm -rf __pycache__ $(VENV_DIR)
 
 re: fclean all
 
