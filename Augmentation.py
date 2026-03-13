@@ -1,16 +1,8 @@
 import argparse
-import os
 
 from pathlib import Path
 from source.augment_image import augment_image
-
-
-def valid_file(path: str) -> str:
-    if not os.path.isfile(path):
-        raise argparse.ArgumentTypeError(f"File '{path}' does not exist")
-    if not os.access(path, os.R_OK):
-        raise PermissionError(f"Read permission is not granted for '{path}'")
-    return path
+from source.utils.valid_file import valid_file
 
 
 def argparse_init() -> argparse.ArgumentParser:
