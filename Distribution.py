@@ -1,15 +1,9 @@
 import argparse
-import os
 
 from pathlib import Path
 from source.count_images import count_images
 from source.plot_charts import plot_charts
-
-
-def existing_directory(path: str) -> str:
-    if not os.path.isdir(path):
-        raise argparse.ArgumentTypeError(f"Directory '{path}' does not exist")
-    return path
+from source.utils.existing_directory import existing_directory
 
 
 def argparse_init() -> argparse.ArgumentParser:
