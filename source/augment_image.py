@@ -21,15 +21,14 @@ def display_images(original_img: np.ndarray,
                    augmented_imgs: dict[str, np.ndarray]) -> None:
     # Displays 3 images per rows, plus one row for the original image
     nb_cols = 3
-    nb_rows = len(augmented_imgs) // nb_cols + 1
+    nb_rows = 1 + math.ceil(len(augmented_imgs) / nb_cols)
+    middle_column_index = 1 + math.ceil(nb_cols // 2)
     second_row_first_column_idx = nb_cols + 1
 
     plt.figure(num="Augmented images")
 
     # Places original image in the middle of the first row
-    plt.subplot(
-        nb_rows, nb_cols, math.ceil(len(augmented_imgs) / nb_cols)
-    )
+    plt.subplot(nb_rows, nb_cols, middle_column_index)
     plt.imshow(original_img)
     plt.title("Original")
     plt.axis("off")

@@ -1,12 +1,21 @@
 import argparse
-from pathlib import Path
+import sys
 
+from pathlib import Path
 from Augmentation import valid_file
 from source.transform_image import transform_image
 from source.utils.existing_directory import existing_directory
 
 
-def argparse_init() -> argparse.ArgumentParser:
+def is_single_file_mode(len_argv: int):
+    return len_argv == 2
+
+
+def is_batch_mode(len_argv: int):
+    return len_argv == 5
+
+
+def argparse_init(len_argv: int) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="Transformation.py",
         usage=(
@@ -16,34 +25,31 @@ def argparse_init() -> argparse.ArgumentParser:
     )
 
     # Single file mode
-    parser.add_argument(
-        "image_file",
-        nargs="?",
-        type=valid_file,
-        help="Input image file"
-    )
-
+    if is_single_file_mode(len_argv):
+        parser.add_argument(
+            "image_file", type=valid_file, help="Input image file"
+        )
     # Batch mode
-    parser.add_argument(
-        "-src", help="Source directory", type=existing_directory
-    )
-    parser.add_argument(
-        "-dest", help="Destination directory", type=existing_directory
-    )
+    elif is_batch_mode(len_argv):
+        parser.add_argument("-src", help="Source directory",
+                            type=existing_directory)
+        parser.add_argument("-dest", help="Destination directory",
+                            type=existing_directory)
 
     return parser
 
 
 def main():
-    parser: argparse.ArgumentParser = argparse_init()
+    len_argv = len(sys.argv)
+    parser: argparse.ArgumentParser = argparse_init(len_argv)
     args = parser.parse_args()
 
     # Single image file
-    if args.image_file and not args.src:
-        image_file_path: Path = Path(parser.parse_args().image_file)
+    if is_single_file_mode(len_argv):
+        image_file_path: Path = Path(args.image_file)
         transform_image(image_file_path)
     # Batch
-    elif args.src and args.dest:
+    elif is_batch_mode(len_argv):
         print(f"Batch mode : src {args.src} | dest {args.dest}")
 
 
