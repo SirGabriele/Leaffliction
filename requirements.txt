@@ -1,7 +1,8 @@
-numpy==1.26.4
-pandas==1.5.3
-matplotlib==3.6.3
-pillow==9.5.0
-opencv-python==4.8.1.78
+numpy==2.4.3
+pandas==3.0.1
+matplotlib==3.10.8
+pillow==12.1.1
+opencv-python==4.13.0.92
 plantcv==4.10.2
-rembg==2.0.50
+rembg==2.0.69
+onnxruntime==1.24.4

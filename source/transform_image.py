@@ -1,12 +1,8 @@
 import math
-
-import cv2
 import numpy as np
 
 from pathlib import Path
 from matplotlib import pyplot as plt
-from plantcv import plantcv
-
 from source.load_image import load_image
 from source.transformation.analyze import analyze
 from source.transformation.gaussian_blur import gaussian_blur
