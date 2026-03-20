@@ -9,7 +9,7 @@ from source.utils.existing_directory import existing_directory
 def argparse_init() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description='Run Distribution program with an input directory',
-        usage="python3.10 Distribution.py <directory>"
+        usage="python3.13 Distribution.py <directory>"
     )
     parser.add_argument(
         'directory',

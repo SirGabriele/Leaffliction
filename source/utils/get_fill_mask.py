@@ -1,11 +1,11 @@
 import numpy as np
+import rembg
 
 from plantcv import plantcv
-from source.utils.remove_background import remove_background
 
 
 def get_fill_mask(image: np.ndarray) -> np.ndarray:
-    image_without_background = remove_background(image)
+    image_without_background = rembg.remove(image)
 
     # Grayscale image of the light colorspace channel
     image_grayscale = plantcv.rgb2gray_lab(
