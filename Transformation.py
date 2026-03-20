@@ -19,8 +19,8 @@ def argparse_init(len_argv: int) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="Transformation.py",
         usage=(
-            "python3.13 Transformation.py <image_file>\n"
-            "python3.13 Transformation.py -src <directory> -dst <directory>"
+            "python3.10 Transformation.py <image_file>\n"
+            "python3.10 Transformation.py -src <directory> -dst <directory>"
         )
     )
 

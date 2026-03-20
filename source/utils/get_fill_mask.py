@@ -1,6 +1,6 @@
 import numpy as np
-from plantcv import plantcv
 
+from plantcv import plantcv
 from source.utils.remove_background import remove_background
 
 

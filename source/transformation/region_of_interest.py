@@ -1,52 +1,35 @@
+import cv2
 import numpy as np
-from plantcv import plantcv as pcv, plantcv
 
 
-def region_of_interest(image: np.ndarray) -> np.ndarray:
-    # hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-    #
-    # lower = np.array([25, 40, 40])
-    # upper = np.array([90, 255, 255])
-    #
-    # mask = cv2.inRange(hsv, lower, upper)
-    #
-    # result = np.zeros_like(image)
-    # result[mask == 255] = image[mask == 255]
+def region_of_interest(image: np.ndarray, fill_mask: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
-    # result[(mask != 255) & (image.sum(axis=2) > 0)] = (0, 255, 0)
-    # l_gray = pcv.rgb2gray_lab(rgb_img=image, channel="l")
-    # bin_mask = pcv.threshold.otsu(gray_img=l_gray, object_type="light")
-    # cleaner_mask = pcv.fill(bin_img=bin_mask, size=50)
-    # clean_mask = pcv.fill_holes(cleaner_mask)
+    lower_green = np.array([36, 0, 0])
+    upper_green = np.array([80, 255, 255])
 
-    # h, w = image.shape[:2]
-    # roi1 = pcv.roi.custom(img=image, vertices=[
-    #     (0, 0), (w - 1, 0), (w - 1, h - 1), (0, h - 1)
-    # ])
+    green_mask = cv2.inRange(hsv, lower_green, upper_green)
+    green_mask = cv2.medianBlur(green_mask, 5)
 
-    # kept_mask = pcv.roi.filter(mask=cleaner_mask, roi=roi1, roi_type='partial')
-    # labeled_objects, n_obj = pcv.create_labels(mask=kept_mask)
-    # shape_img = pcv.analyze.size(img=image, labeled_mask=labeled_objects,
-    #                              n_labels=n_obj)
+    contours, _ = cv2.findContours(
+        fill_mask,
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE
+    )
+    plant_contour = max(contours, key=cv2.contourArea)
 
-    # roi_start_x = 0
-    # roi_start_y = 0
-    # roi_w = image.shape[0]
-    # roi_h = image.shape[1]
-    # roi_line_w = 5
+    roi_mask = np.zeros_like(fill_mask)
+    cv2.drawContours(roi_mask, [plant_contour], -1, 255, -1)
+    disease_mask = cv2.bitwise_and(roi_mask, cv2.bitwise_not(green_mask))
 
-    # roi = pcv.roi.rectangle(
-    #     img=image,
-    #     x=roi_start_x,
-    #     y=roi_start_y,
-    #     w=roi_w,
-    #     h=roi_h
-    # )
+    image_copy = image.copy()
 
-    # Create a mask based on the ROI
-    # kept_mask = pcv.roi.filter(mask=image, roi=roi, roi_type='partial')
+    # Sets all pixels that do not match the green mask to black
+    black = [0, 0, 0]
+    image_copy[green_mask == 0] = black
 
-    a_gray = pcv.rgb2gray_lab(rgb_img=image, channel="a")
-    bin_mask = pcv.threshold.otsu(gray_img=a_gray, object_type="dark")
-    cleaned_mask = pcv.fill(bin_img=bin_mask, size=1000)
-    return cleaned_mask
+    # Sets all pixels that do not match the green mask but match the ROI mask
+    # to neon green
+    neon_green = [57, 255, 20]
+    image_copy[disease_mask == 255] = neon_green
+    return image_copy, disease_mask
