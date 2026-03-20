@@ -44,7 +44,7 @@ for ((i=1; i<=count; i++)); do
   file="$dir/image ($i).JPG"
 
   if [ -f "$file" ]; then
-    venv/bin/python3.13 Augmentation.py "$file" &
+    venv/bin/python3.10 Augmentation.py "$file" &
   else
     echo "File not found: $file. Stopping loop."
   fi

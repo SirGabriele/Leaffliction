@@ -1,8 +1,12 @@
 import math
+
+import cv2
 import numpy as np
 
 from pathlib import Path
 from matplotlib import pyplot as plt
+from plantcv import plantcv
+
 from source.load_image import load_image
 from source.transformation.analyze import analyze
 from source.transformation.gaussian_blur import gaussian_blur
@@ -43,11 +47,12 @@ def transform_image(image_file_path: Path) -> None:
     image: np.ndarray = load_image(image_file_path)
 
     fill_mask = get_fill_mask(image)
+    roi, disease_mask = region_of_interest(image, fill_mask)
 
     transformed_imgs: dict[str, np.ndarray] = {
         "Gaussian blur": gaussian_blur(image),
-        "ROI": region_of_interest(image),
-        "Analysis": analyze(image, fill_mask),
+        "ROI": roi,
+        "Analysis": analyze(image, disease_mask),
         "pseudolandmark": pseudolandmark(image, fill_mask)
     }
 

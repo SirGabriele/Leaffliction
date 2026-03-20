@@ -8,7 +8,7 @@ from source.utils.valid_file import valid_file
 def argparse_init() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description='Run Augmentation program with an input JPG file',
-        usage="python3.13 Augmentation.py <image_file>"
+        usage="python3.10 Augmentation.py <image_file>"
     )
     parser.add_argument(
         'image_file',

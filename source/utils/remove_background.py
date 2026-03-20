@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import rembg
 
 
 def remove_background(image: np.ndarray):
@@ -8,3 +9,5 @@ def remove_background(image: np.ndarray):
     upper = np.array([90, 255, 255])
     mask = cv2.inRange(hsv, lower, upper)
     return cv2.bitwise_and(image, image, mask=mask)
+    im = rembg.remove(image)
+    return im

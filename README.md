@@ -4,7 +4,7 @@
 
 ### Requirements
 
-- python3.13.5
+- python3.10.5
 - make
 - pip
 
@@ -29,8 +29,8 @@ images/Grape_Black_rot
 It will display one pie chart and one bar chart that show the amount of 
 files per subdirectory.
 
-```python3.13
-venv/bin/python3.13 Distribution.py <data_set_directory>
+```python3.10
+venv/bin/python3.10 Distribution.py <data_set_directory>
 ```
 
 ![Distribution charts](resource/distribution_charts.png)
