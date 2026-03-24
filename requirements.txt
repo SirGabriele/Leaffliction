@@ -6,3 +6,4 @@ opencv-python==4.13.0.92
 plantcv==4.10.2
 rembg==2.0.69
 onnxruntime==1.24.4
+tensorflow==2.21.0
