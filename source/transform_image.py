@@ -4,13 +4,13 @@ import numpy as np
 
 from pathlib import Path
 from matplotlib import pyplot as plt
-from source.load_image import load_image
 from source.transformation.analyze import analyze
-from source.transformation.gaussian_blur import gaussian_blur
+from source.transformation.edges_detection import edge_detection
+from source.transformation.saturation import saturation
 from source.transformation.generate_histogram import generate_histogram
+from source.transformation.hightlight_disease import highlight_disease
 from source.transformation.pseudolandmark import pseudolandmark
 from source.transformation.region_of_interest import region_of_interest
-from source.utils.get_fill_mask import get_fill_mask
 
 
 def display_images(original_img: np.ndarray,
@@ -32,6 +32,8 @@ def display_images(original_img: np.ndarray,
     for i, (title, img) in enumerate(
             transformed_imgs.items(), start=second_row_first_column_idx
     ):
+        if img.ndim == 2:
+            plt.set_cmap("gray")
         plt.subplot(nb_rows, nb_cols, i)
         plt.imshow(img)
         plt.title(title)
@@ -43,33 +45,32 @@ def display_images(original_img: np.ndarray,
 
 def transform_image(image: np.ndarray, args: argparse.Namespace) -> dict[str, np.ndarray]:
 
-    fill_mask = get_fill_mask(image)
-
+    roi_mask = region_of_interest(image)
     do_all = not any([
-        args.blur,
+        args.saturation,
         args.mask,
         args.roi,
         args.analysis,
         args.pseudolandmark,
-        args.color_histogram
+        args.edges,
     ])
 
     transformed_imgs: dict[str, np.ndarray] = {}
 
-    if do_all or args.blur:
-        transformed_imgs["Gaussian blur"] = gaussian_blur(image)
     if do_all or args.mask:
-        transformed_imgs["Mask"] = fill_mask
-    if do_all or args.roi or args.analyze:
-        roi, disease_mask = region_of_interest(image, fill_mask)
+        transformed_imgs["Mask"] = roi_mask
+    if do_all or args.saturation:
+        transformed_imgs["Saturation"] = saturation(image)
+    if do_all or args.roi or args.analysis:
         if do_all or args.roi:
-            transformed_imgs["ROI"] = roi
+            transformed_imgs["ROI (Disease highlight)"] = highlight_disease(image, roi_mask)
         if do_all or args.analysis:
-            transformed_imgs["Analysis"] = analyze(image, disease_mask)
+            transformed_imgs["Analysis"] = analyze(image, roi_mask)
     if do_all or args.pseudolandmark:
-        transformed_imgs["Pseudolandmark"] = pseudolandmark(image, fill_mask)
-    if do_all or args.color_histogram:
-        transformed_imgs["Color Histogram"] = generate_histogram(image, fill_mask)
+        transformed_imgs["Pseudolandmark"] = pseudolandmark(image, roi_mask)
+    if do_all or args.edges:
+        transformed_imgs["Edges"] = edge_detection(roi_mask)
     return transformed_imgs
+
 
 

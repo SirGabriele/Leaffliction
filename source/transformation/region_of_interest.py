@@ -1,35 +1,30 @@
 import cv2
 import numpy as np
+from plantcv import plantcv as pcv
 
 
-def region_of_interest(image: np.ndarray, fill_mask: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+def region_of_interest(image: np.ndarray, iterations: int = 5, margin: int = 20) -> np.ndarray:
+    h, w = image.shape[:2]
 
-    lower_green = np.array([36, 0, 0])
-    upper_green = np.array([80, 255, 255])
+    # We suppose that the leaf is in the center, we take a rectangle with a margin.
+    rect = (margin, margin, w - (2 * margin), h - (2 * margin))
 
-    green_mask = cv2.inRange(hsv, lower_green, upper_green)
-    green_mask = cv2.medianBlur(green_mask, 5)
+    # Internal masks used by GrabCut, they are initialized as zeros and updated by the algorithm.
+    background_mask = np.zeros((1, 65), np.float64)
+    foreground_mask = np.zeros((1, 65), np.float64)
 
-    contours, _ = cv2.findContours(
-        fill_mask,
-        cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE
-    )
-    plant_contour = max(contours, key=cv2.contourArea)
+    mask = np.zeros((h, w), np.uint8)
+    img_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    roi_mask = np.zeros_like(fill_mask)
-    cv2.drawContours(roi_mask, [plant_contour], -1, 255, -1)
-    disease_mask = cv2.bitwise_and(roi_mask, cv2.bitwise_not(green_mask))
+    cv2.grabCut(img_bgr, mask, rect, background_mask, foreground_mask, iterations, cv2.GC_INIT_WITH_RECT)
 
-    image_copy = image.copy()
+    # GrabCut modify the 'mask' with 4 values :
+    # 0: Definite Background, 1: Definite Foreground, 2: Probable Background, 3: Probable Foreground
+    # We want foreground (1 and 3)
+    bin_mask = np.where((mask == 1) | (mask == 3), 255, 0).astype(np.uint8)
 
-    # Sets all pixels that do not match the green mask to black
-    black = [0, 0, 0]
-    image_copy[green_mask == 0] = black
-
-    # Sets all pixels that do not match the green mask but match the ROI mask
-    # to neon green
-    neon_green = [57, 255, 20]
-    image_copy[disease_mask == 255] = neon_green
-    return image_copy, disease_mask
+    # GrabCut can leave small isolated background points. We use pcv.fill to remove noise smaller than
+    # X pixels (e.g., 100) and pcv.fill_holes to fill small holes in the leaf.
+    cleaned_mask = pcv.fill(bin_img=bin_mask, size=100)
+    final_mask = pcv.fill_holes(bin_img=cleaned_mask)
+    return final_mask
