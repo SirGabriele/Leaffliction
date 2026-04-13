@@ -2,3 +2,6 @@ images
 augmented_directory
 .idea
 venv
+.claude
+claude.md
+.gitignore

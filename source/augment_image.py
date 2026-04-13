@@ -45,7 +45,7 @@ def display_images(original_img: np.ndarray,
     plt.show()
 
 
-def augment_image(image_file_path: Path):
+def augment_image(image_file_path: Path, display: bool = True):
     augmented_directory: Path = create_augmented_directory(image_file_path)
 
     image: np.ndarray = load_image(image_file_path)
@@ -64,5 +64,5 @@ def augment_image(image_file_path: Path):
         augmented_directory, image_file_path, image
     )
 
-    if DISPLAY_AUGMENTED_IMAGES:
+    if display and DISPLAY_AUGMENTED_IMAGES:
         display_images(original_img=image, augmented_imgs=augmented_imgs)

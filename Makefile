@@ -16,6 +16,9 @@ venv:
 		$(VENV_EXEC) -m pip install -r $(REQUIREMENTS_FILE); \
 	fi
 
+train:	venv
+		$(VENV_EXEC) train.py $(DATASET)
+
 clean:
 	rm -rf $(SHARED_VALUES_FILE)
 
