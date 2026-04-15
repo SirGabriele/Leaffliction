@@ -67,10 +67,13 @@ We have implemented 6 different transformations that can be applied to the image
 - **Pseudolandmark (`-p`, `--pseudolandmark`)** : Extracts and displays pseudolandmarks on the leaf.
 - **Edges (`-e`, `--edges`)** : Detects the edges of the region of interest.
 
+> [!NOTE]
+> If no specific filter flag is provided, **all** transformations are applied by default.
+
 The program operates in two distinct modes depending on the provided arguments:
 
 ### 1. Single File Mode
-Processes a single image and opens a `matplotlib` window to display the original image alongside the requested transformations. If no specific filter flag is provided, **all** transformations are applied by default.
+Processes a single image and opens a `matplotlib` window to display the original image alongside the requested transformations. 
 
 ```bash
 $ ./venv/bin/python3.10 Transformation.py <image_file>
