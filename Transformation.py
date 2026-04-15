@@ -60,7 +60,15 @@ def process_single_image_worker(rel_path: Path, source: Path, destination: Path,
         image_file_path: Path = source / rel_path
         image: np.ndarray = load_image(image_file_path)
 
-        transformed_images = transform_image(image, args)
+        transformed_images = transform_image(
+            image,
+            saturation=args.saturation,
+            mask=args.mask,
+            roi=args.roi,
+            analysis=args.analysis,
+            pseudolandmark=args.pseudolandmark,
+            edges=args.edges
+        )
         dest_sub_dir = destination / rel_path.parent
         dest_sub_dir.mkdir(parents=True, exist_ok=True)
 
@@ -84,7 +92,15 @@ def handle_single_file_mode(args: argparse.Namespace) -> None:
     print(f"Single file mode : src {args.image_file}")
     image_file_path: Path = Path(args.image_file)
     image: np.ndarray = load_image(image_file_path)
-    transformed_images = transform_image(image, args)
+    transformed_images = transform_image(
+        image,
+        saturation=args.saturation,
+        mask=args.mask,
+        roi=args.roi,
+        analysis=args.analysis,
+        pseudolandmark=args.pseudolandmark,
+        edges=args.edges
+    )
     display_images(image, transformed_images)
 
 def handle_batch_mode(args: argparse.Namespace) -> None:

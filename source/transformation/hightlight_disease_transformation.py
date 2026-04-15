@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def highlight_disease(image: np.ndarray, final_mask: np.ndarray) -> np.ndarray:
+def highlight_disease_transformation(image: np.ndarray, final_mask: np.ndarray) -> np.ndarray:
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
     lower_disease1 = np.array([0, 40, 40])

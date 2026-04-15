@@ -3,7 +3,7 @@ import numpy as np
 from plantcv import plantcv as pcv
 
 
-def region_of_interest(image: np.ndarray, iterations: int = 5, margin: int = 20) -> np.ndarray:
+def roi_transformation(image: np.ndarray, iterations: int = 5, margin: int = 20) -> np.ndarray:
     h, w = image.shape[:2]
 
     # We suppose that the leaf is in the center, we take a rectangle with a margin.
