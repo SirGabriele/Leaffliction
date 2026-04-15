@@ -110,8 +110,10 @@ def handle_single_file_mode(
         roi: bool = False,
         analysis: bool = False,
         pseudolandmark: bool = False,
-        edges: bool = False) -> None:
-    print(f"Single file mode : src {image_file}")
+        edges: bool = False,
+        print_info: bool = False) -> None:
+    if print_info:
+        print(f"Single file mode : src {image_file}")
     image_file_path: Path = Path(image_file)
     image: np.ndarray = load_image(image_file_path)
     transformed_images = transform_image(
@@ -168,7 +170,8 @@ def main():
                                 mask=args.mask, roi=args.roi,
                                 analysis=args.analysis,
                                 pseudolandmark=args.pseudolandmark,
-                                edges=args.edges)
+                                edges=args.edges,
+                                print_info=True)
     else:
         handle_batch_mode(args)
 
