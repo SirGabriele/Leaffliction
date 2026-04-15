@@ -4,7 +4,7 @@ import numpy as np
 from plantcv import plantcv
 
 
-def pseudolandmark(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
+def pseudolandmark_transformation(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
     top_pts, bottom_pts, center_pts = plantcv.homology.x_axis_pseudolandmarks(
         img=image, mask=mask, label='default'
     )
