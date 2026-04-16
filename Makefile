@@ -3,7 +3,7 @@ REQUIREMENTS_FILE = requirements.txt
 VENV_DIR = venv
 
 # Executable
-PYTHON_VERSION = python3.13
+PYTHON_VERSION = python3.10
 VENV_EXEC = $(VENV_DIR)/bin/$(PYTHON_VERSION)
 
 # Rules
