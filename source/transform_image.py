@@ -13,13 +13,13 @@ from source.utils.get_fill_mask import get_fill_mask
 
 def display_images(original_img: np.ndarray,
                    transformed_imgs: dict[str, np.ndarray]) -> None:
-    # Displays 3 images per rows, plus one row for the original image
+    # Displays 3 images_dir per rows, plus one row for the original image
     nb_cols = 3
     nb_rows = 1 + math.ceil(len(transformed_imgs) / nb_cols)
     middle_column_index = 1 + math.ceil(nb_cols // 2)
     second_row_first_column_idx = nb_cols + 1
 
-    plt.figure(num="Transformed images")
+    plt.figure(num="Transformed images_dir")
 
     # Places original image in the middle of the first row
     plt.subplot(nb_rows, nb_cols, middle_column_index)

@@ -19,13 +19,13 @@ from source.save_image import save_image_in_augmented_directory
 
 def display_images(original_img: np.ndarray,
                    augmented_imgs: dict[str, np.ndarray]) -> None:
-    # Displays 3 images per rows, plus one row for the original image
+    # Displays 3 images_dir per rows, plus one row for the original image
     nb_cols = 3
     nb_rows = 1 + math.ceil(len(augmented_imgs) / nb_cols)
     middle_column_index = 1 + math.ceil(nb_cols // 2)
     second_row_first_column_idx = nb_cols + 1
 
-    plt.figure(num="Augmented images")
+    plt.figure(num="Augmented images_dir")
 
     # Places original image in the middle of the first row
     plt.subplot(nb_rows, nb_cols, middle_column_index)

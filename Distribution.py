@@ -24,12 +24,12 @@ def main():
     root_directory_name: str = parser.parse_args().directory
     root_directory: Path = Path(root_directory_name)
 
-    labels, counts = count_images(root_directory)
-    if not labels:
-        print("No subdirectory containing JPG images found.")
+    count_images_dir = count_images(root_directory)
+    if not count_images_dir :
+        print("No subdirectory containing JPG images_dir found.")
         return
 
-    plot_charts(root_directory_name, labels, counts)
+    plot_charts(root_directory_name, list(count_images_dir.keys()), list(count_images_dir.values()))
 
 
 if __name__ == '__main__':
