@@ -1,9 +1,8 @@
 from pathlib import Path
 
 
-def count_images(root_directory: Path) -> tuple[list[str], list[int]]:
-    class_names: list[str] = []
-    counts: list[int] = []
+def count_images(root_directory: Path) -> dict[str, int]:
+    result = dict()
 
     for subdir in root_directory.iterdir():
         if subdir.is_dir():
@@ -13,7 +12,6 @@ def count_images(root_directory: Path) -> tuple[list[str], list[int]]:
             ]
 
             if images:
-                class_names.append(subdir.name)
-                counts.append(len(images))
+                result[subdir.name] = len(images)
 
-    return class_names, counts
+    return result
