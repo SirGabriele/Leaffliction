@@ -71,7 +71,7 @@ def validate_arguments_or_fail(args: argparse.Namespace,
 
 
 def process_single_image_worker(rel_path: Path, source: Path,
-                                destination: Path, args: argparse.Namespace) -> \
+                                destination: Path, transform_params: dict) -> \
         tuple[
             bool, str]:
     try:
@@ -80,12 +80,7 @@ def process_single_image_worker(rel_path: Path, source: Path,
 
         transformed_images = transform_image(
             image,
-            saturation=args.saturation,
-            mask=args.mask,
-            roi=args.roi,
-            analysis=args.analysis,
-            pseudolandmark=args.pseudolandmark,
-            edges=args.edges
+            **transform_params,
         )
         dest_sub_dir = destination / rel_path.parent
         dest_sub_dir.mkdir(parents=True, exist_ok=True)
@@ -108,37 +103,26 @@ def process_single_image_worker(rel_path: Path, source: Path,
 
 def handle_single_file_mode(
         image_file: str,
-        saturation: bool = False,
-        mask: bool = False,
-        roi: bool = False,
-        analysis: bool = False,
-        pseudolandmark: bool = False,
-        edges: bool = False,
-        print_info: bool = False) -> None:
+        transform_params: dict,
+        print_info
+) -> None:
     if print_info:
         print(f"Single file mode : src {image_file}")
     image_file_path: Path = Path(image_file)
     image: np.ndarray = load_image(image_file_path)
     transformed_images = transform_image(
         image,
-        saturation=saturation,
-        mask=mask,
-        roi=roi,
-        analysis=analysis,
-        pseudolandmark=pseudolandmark,
-        edges=edges
+        **transform_params
     )
     display_images(image, transformed_images)
 
 
-def handle_batch_mode(args: argparse.Namespace) -> None:
+def handle_batch_mode(source_path: Path, dest_path: Path, transform_params: dict) -> None:
     print(
-        f"Batch mode :\n\t- Source = {args.source}\n\t- Destination = {args.destination}")
-    source_path = Path(args.source)
-    dest_path = Path(args.destination)
+        f"Batch mode :\n\t- Source = {source_path}\n\t- Destination = {dest_path}")
     valid_extensions = {'.jpg', '.jpeg', '.png'}
-    if not os.path.isdir(args.destination):
-        Path(args.destination).mkdir(parents=True, exist_ok=True)
+    if not os.path.isdir(dest_path):
+        Path(dest_path).mkdir(parents=True, exist_ok=True)
     images_to_process = [
         p for p in source_path.rglob('*')
         if p.is_file() and p.suffix.lower() in valid_extensions
@@ -153,7 +137,7 @@ def handle_batch_mode(args: argparse.Namespace) -> None:
             rel_path = img_path.relative_to(source_path)
             futures.append(
                 executor.submit(process_single_image_worker, rel_path,
-                                source_path, dest_path, args)
+                                source_path, dest_path, transform_params)
             )
 
         for future in tqdm(as_completed(futures), total=len(images_to_process),
@@ -167,16 +151,20 @@ def main():
     parser: argparse.ArgumentParser = argparse_init()
     args = parser.parse_args()
     validate_arguments_or_fail(args, parser)
+    transform_params = {
+        'saturation': args.saturation,
+        'mask': args.mask,
+        'roi': args.roi,
+        'analysis': args.analysis,
+        'pseudolandmark': args.pseudolandmark,
+        'edges': args.edges
+    }
 
     if args.image_file:
-        handle_single_file_mode(args.image_file, saturation=args.saturation,
-                                mask=args.mask, roi=args.roi,
-                                analysis=args.analysis,
-                                pseudolandmark=args.pseudolandmark,
-                                edges=args.edges,
+        handle_single_file_mode(args.image_file, transform_params,
                                 print_info=True)
     else:
-        handle_batch_mode(args)
+        handle_batch_mode(args.source, args.destination, transform_params)
 
 
 if __name__ == '__main__':

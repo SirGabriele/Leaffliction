@@ -10,6 +10,7 @@ from source.transformation.saturation_transformation import saturation_transform
 from source.transformation.hightlight_disease_transformation import highlight_disease_transformation
 from source.transformation.pseudolandmark_transformation import pseudolandmark_transformation
 from source.transformation.roi_transformation import roi_transformation
+from source.transformation.background_removal_transformation import background_removal_transformation
 
 
 def display_images(original_img: np.ndarray,
@@ -49,7 +50,9 @@ def transform_image(
     roi: bool = False,
     analysis: bool = False,
     pseudolandmark: bool = False,
-    edges: bool = False) -> dict[str, np.ndarray]:
+    edges: bool = False,
+    background_removal: bool = False,
+) -> dict[str, np.ndarray]:
 
     roi_mask = roi_transformation(image)
     do_all = not any([
@@ -59,12 +62,15 @@ def transform_image(
         analysis,
         pseudolandmark,
         edges,
+        background_removal
     ])
 
     transformed_imgs: dict[str, np.ndarray] = {}
 
     if do_all or mask:
         transformed_imgs["Mask"] = roi_mask
+    if do_all or background_removal:
+        transformed_imgs["Background removal"] = background_removal_transformation(image, roi_mask)
     if do_all or saturation:
         transformed_imgs["Saturation"] = saturation_transformation(image)
     if do_all or roi or analysis:
