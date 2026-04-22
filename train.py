@@ -17,7 +17,7 @@ CONV_FILTERS = (32, 64, 128)
 AUGMENTED_DIR = "transformation_images"
 
 def _transform_and_load_dataset(dataset_path: Path) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
-    handle_batch_mode(dataset_path, Path(AUGMENTED_DIR), {"background_removal": True})
+    #handle_batch_mode(dataset_path, Path(AUGMENTED_DIR), {"background_removal": True})
     return [
         tf.keras.utils.image_dataset_from_directory(
         AUGMENTED_DIR,
