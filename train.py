@@ -1,11 +1,14 @@
 import json
+import multiprocessing
+import shutil
+from concurrent.futures.process import ProcessPoolExecutor
 from pathlib import Path
 import tensorflow as tf
 import argparse
-import shutil
 from typing import Tuple
 from tensorflow.keras import Sequential, layers
 
+from source.augment_image import augment_image
 from source.utils.existing_directory import existing_directory
 from Transformation import handle_batch_mode
 
@@ -13,6 +16,7 @@ IMAGE_SIZE = (128, 128)
 BATCH_SIZE = 32
 DENSE_UNITS = 128
 CONV_FILTERS = (32, 64, 128)
+BALANCED_DIR = "balanced_images"
 AUGMENTED_DIR = "transformation_images"
 
 def _transform_and_load_dataset(dataset_path: Path) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
@@ -62,25 +66,58 @@ def _build_model(class_names) -> Sequential:
     return model
 
 
-def _save_and_zip(model, class_names, augmented_dir):
-    export = Path("leaffliction_results")
-    export.mkdir(exist_ok=True)
+def _balance_dataset(images_folder: Path) -> Path:
+    TARGET = 2000
+    Path(BALANCED_DIR).mkdir(parents=True, exist_ok=True)
 
-    model.save(export / "leaf_model.keras")
+    for cat_dir in images_folder.iterdir():
+        if not cat_dir.is_dir():
+            continue
 
-    with open(export / "class_names.json", "w") as f:
-        json.dump(class_names, f)
+        cat_name = cat_dir.name
+        dest_dir = Path(BALANCED_DIR) / cat_name
+        dest_dir.mkdir(parents=True, exist_ok=True)
 
-    dest_img_dir = export / "augmented_directory"
-    if dest_img_dir.exists():
-        shutil.rmtree(dest_img_dir)
-    shutil.copytree(augmented_dir, dest_img_dir)
-    shutil.make_archive("training_results", "zip", export)
-    shutil.rmtree(export)
+        images = [f for f in cat_dir.iterdir() if
+                  f.is_file() and f.suffix.lower() in {'.jpg', '.jpeg',
+                                                       '.png'}]
+        count = len(images)
+
+        print(f"--- Category: {cat_name} ({count} images) ---")
+
+        if count >= TARGET:
+            print(f"Too many or enough images. Copying first {TARGET}...")
+            for img in images[:TARGET]:
+                shutil.copy2(img, dest_dir / img.name)
+        else:
+            print(
+                f"Not enough images. Copying all ({count}) and augmenting...")
+            copied_images = []
+            for img in images:
+                dest_file = dest_dir / img.name
+                shutil.copy2(img, dest_file)
+                copied_images.append(dest_file)
+
+            needed = TARGET - count
+            runs = (needed + 5) // 6
+
+            num_to_augment = len(copied_images)
+            if num_to_augment > 0:
+                print(f"Starting {runs} augmentations...")
+                tasks = [copied_images[i % num_to_augment] for i in
+                         range(runs)]
+
+                with ProcessPoolExecutor(
+                        max_workers=multiprocessing.cpu_count()) as executor:
+                    executor.map(augment_image, tasks)
+
+    print(f"--- Done! Check the '{BALANCED_DIR}' folder. ---")
+    return Path(BALANCED_DIR)
 
 
 def train(images_folder: Path):
-    train_ds, val_ds = _transform_and_load_dataset(images_folder)
+    balanced_images_folder = _balance_dataset(images_folder)
+    train_ds, val_ds = _transform_and_load_dataset(balanced_images_folder)
 
     class_names = train_ds.class_names
 
@@ -98,7 +135,6 @@ def train(images_folder: Path):
     with open("class_names.json", "w") as f:
         json.dump(class_names, f)
     model.save("leaf_model.keras")
-    _save_and_zip(model, class_names, AUGMENTED_DIR)
     print("\nFinal training accuracy: {:.2f}%".format(history.history['accuracy'][-1] * 100))
     print("Final validation accuracy: {:.2f}%".format(history.history['val_accuracy'][-1] * 100))
 
@@ -118,7 +154,7 @@ def argparse_init() -> argparse.ArgumentParser:
 
 def main():
     args = argparse_init().parse_args()
-    train(args.directory)
+    train(Path(args.directory))
 
 
 if __name__ == '__main__':

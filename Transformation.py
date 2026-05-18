@@ -53,6 +53,8 @@ def argparse_init() -> argparse.ArgumentParser:
                         help="Apply pseudolandmark to the image transformation")
     parser.add_argument('-e', '--edges', action="store_true",
                         help="Apply edges detection to the image transformation")
+    parser.add_argument('-b', '--background', action="store_true",
+                        help="Apply background removal transformation")
     return parser
 
 
@@ -157,14 +159,15 @@ def main():
         'roi': args.roi,
         'analysis': args.analysis,
         'pseudolandmark': args.pseudolandmark,
-        'edges': args.edges
+        'edges': args.edges,
+        'background_removal': args.background
     }
 
     if args.image_file:
         handle_single_file_mode(args.image_file, transform_params,
                                 print_info=True)
     else:
-        handle_batch_mode(args.source, args.destination, transform_params)
+        handle_batch_mode(Path(args.source), args.destination, transform_params)
 
 
 if __name__ == '__main__':

@@ -1,8 +1,6 @@
-import argparse
 import math
 import numpy as np
 
-from pathlib import Path
 from matplotlib import pyplot as plt
 from source.transformation.analyze_transformation import analyze_transformation
 from source.transformation.edges_detection_transformation import edge_detection_transformation
@@ -53,7 +51,6 @@ def transform_image(
     edges: bool = False,
     background_removal: bool = False,
 ) -> dict[str, np.ndarray]:
-
     roi_mask = roi_transformation(image)
     do_all = not any([
         saturation,
