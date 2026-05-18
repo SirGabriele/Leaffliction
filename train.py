@@ -9,7 +9,7 @@ from typing import Tuple
 from tensorflow.keras import Sequential, layers
 
 from config import AUGMENTED_DIR, IMAGE_SIZE, BATCH_SIZE, DENSE_UNITS, \
-    CONV_FILTERS, BALANCED_DIR
+    CONV_FILTERS, BALANCED_DIR, NB_IMG_PER_FOLDER
 from source.augment_image import augment_image
 from source.utils.existing_directory import existing_directory
 from Transformation import handle_batch_mode
@@ -67,7 +67,6 @@ def _build_model(class_names) -> Sequential:
 
 
 def _balance_dataset(images_folder: Path) -> Path:
-    TARGET = 2000
     Path(BALANCED_DIR).mkdir(parents=True, exist_ok=True)
 
     for cat_dir in images_folder.iterdir():
@@ -85,9 +84,9 @@ def _balance_dataset(images_folder: Path) -> Path:
 
         print(f"--- Category: {cat_name} ({count} images) ---")
 
-        if count >= TARGET:
-            print(f"Too many or enough images. Copying first {TARGET}...")
-            for img in images[:TARGET]:
+        if count >= NB_IMG_PER_FOLDER:
+            print(f"Too many or enough images. Copying first {NB_IMG_PER_FOLDER}...")
+            for img in images[:NB_IMG_PER_FOLDER]:
                 shutil.copy2(img, dest_dir / img.name)
         else:
             print(
@@ -98,7 +97,7 @@ def _balance_dataset(images_folder: Path) -> Path:
                 shutil.copy2(img, dest_file)
                 copied_images.append(dest_file)
 
-            needed = TARGET - count
+            needed = NB_IMG_PER_FOLDER - count
             runs = (needed + 5) // 6
 
             num_to_augment = len(copied_images)
