@@ -83,15 +83,3 @@ def transform_image(
     if do_all or edges:
         transformed_imgs["Edges"] = edge_detection_transformation(roi_mask)
     return transformed_imgs
-
-    fill_mask = get_fill_mask(image)
-    roi, disease_mask = region_of_interest(image, fill_mask)
-
-    transformed_imgs: dict[str, np.ndarray] = {
-        "Gaussian blur": gaussian_blur(image),
-        "ROI": roi,
-        "Analysis": analyze(image, disease_mask),
-        "pseudolandmark": pseudolandmark(image, fill_mask)
-    }
-
-    display_images(image, transformed_imgs)
