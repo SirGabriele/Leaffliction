@@ -3,12 +3,17 @@ import numpy as np
 
 from matplotlib import pyplot as plt
 from source.transformation.analyze_transformation import analyze_transformation
-from source.transformation.edges_detection_transformation import edge_detection_transformation
-from source.transformation.saturation_transformation import saturation_transformation
-from source.transformation.hightlight_disease_transformation import highlight_disease_transformation
-from source.transformation.pseudolandmark_transformation import pseudolandmark_transformation
+from source.transformation.edges_detection_transformation import \
+    edge_detection_transformation
+from source.transformation.saturation_transformation import \
+    saturation_transformation
+from source.transformation.hightlight_disease_transformation import \
+    highlight_disease_transformation
+from source.transformation.pseudolandmark_transformation import \
+    pseudolandmark_transformation
 from source.transformation.roi_transformation import roi_transformation
-from source.transformation.background_removal_transformation import background_removal_transformation
+from source.transformation.background_removal_transformation import \
+    background_removal_transformation
 
 
 def display_images(original_img: np.ndarray,
@@ -42,14 +47,14 @@ def display_images(original_img: np.ndarray,
 
 
 def transform_image(
-    image: np.ndarray,
-    saturation: bool = False,
-    mask: bool = False,
-    roi: bool = False,
-    analysis: bool = False,
-    pseudolandmark: bool = False,
-    edges: bool = False,
-    background_removal: bool = False,
+        image: np.ndarray,
+        saturation: bool = False,
+        mask: bool = False,
+        roi: bool = False,
+        analysis: bool = False,
+        pseudolandmark: bool = False,
+        edges: bool = False,
+        background_removal: bool = False,
 ) -> dict[str, np.ndarray]:
     roi_mask = roi_transformation(image)
     do_all = not any([
@@ -67,16 +72,22 @@ def transform_image(
     if do_all or mask:
         transformed_imgs["Mask"] = roi_mask
     if do_all or background_removal:
-        transformed_imgs["Background removal"] = background_removal_transformation(image, roi_mask)
+        transformed_imgs[
+            "Background removal"] = background_removal_transformation(image,
+                                                                      roi_mask)
     if do_all or saturation:
         transformed_imgs["Saturation"] = saturation_transformation(image)
     if do_all or roi or analysis:
         if do_all or roi:
-            transformed_imgs["ROI (Disease highlight)"] = highlight_disease_transformation(image, roi_mask)
+            transformed_imgs[
+                "ROI (Disease highlight)"] = highlight_disease_transformation(
+                image, roi_mask)
         if do_all or analysis:
-            transformed_imgs["Analysis"] = analyze_transformation(image, roi_mask)
+            transformed_imgs["Analysis"] = analyze_transformation(image,
+                                                                  roi_mask)
     if do_all or pseudolandmark:
-        transformed_imgs["Pseudolandmark"] = pseudolandmark_transformation(image, roi_mask)
+        transformed_imgs["Pseudolandmark"] = pseudolandmark_transformation(
+            image, roi_mask)
     if do_all or edges:
         transformed_imgs["Edges"] = edge_detection_transformation(roi_mask)
     return transformed_imgs

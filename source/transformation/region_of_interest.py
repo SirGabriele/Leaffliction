@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 
 
-def region_of_interest(image: np.ndarray, fill_mask: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def region_of_interest(image: np.ndarray, fill_mask: np.ndarray) \
+        -> tuple[np.ndarray, np.ndarray]:
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
     lower_green = np.array([36, 0, 0])

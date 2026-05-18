@@ -15,25 +15,28 @@ from source.utils.existing_directory import existing_directory
 from Transformation import handle_batch_mode
 
 
-def _transform_and_load_dataset(dataset_path: Path) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
-    handle_batch_mode(dataset_path, Path(AUGMENTED_DIR), {"background_removal": True})
+def _transform_and_load_dataset(dataset_path: Path) \
+        -> Tuple[tf.data.Dataset, tf.data.Dataset]:
+    handle_batch_mode(dataset_path, Path(AUGMENTED_DIR),
+                      {"background_removal": True})
     return [
         tf.keras.utils.image_dataset_from_directory(
-        AUGMENTED_DIR,
-        validation_split=0.2,
-        subset="training",
-        seed=123,
-        image_size=IMAGE_SIZE,
-        batch_size=BATCH_SIZE
-    ),
-     tf.keras.utils.image_dataset_from_directory(
-        AUGMENTED_DIR,
-        validation_split=0.2,
-        subset="validation",
-        seed=123,
-        image_size=IMAGE_SIZE,
-        batch_size=BATCH_SIZE
-    )]
+            AUGMENTED_DIR,
+            validation_split=0.2,
+            subset="training",
+            seed=123,
+            image_size=IMAGE_SIZE,
+            batch_size=BATCH_SIZE
+        ),
+        tf.keras.utils.image_dataset_from_directory(
+            AUGMENTED_DIR,
+            validation_split=0.2,
+            subset="validation",
+            seed=123,
+            image_size=IMAGE_SIZE,
+            batch_size=BATCH_SIZE
+        )]
+
 
 def _build_model(class_names) -> Sequential:
     shape = (IMAGE_SIZE[0], IMAGE_SIZE[1], 3)
@@ -57,7 +60,8 @@ def _build_model(class_names) -> Sequential:
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(len(class_names), activation='softmax'))
 
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
 
     return model
 
@@ -131,8 +135,10 @@ def train(images_folder: Path):
     with open("class_names.json", "w") as f:
         json.dump(class_names, f)
     model.save("leaf_model.keras")
-    print("\nFinal training accuracy: {:.2f}%".format(history.history['accuracy'][-1] * 100))
-    print("Final validation accuracy: {:.2f}%".format(history.history['val_accuracy'][-1] * 100))
+    print("\nFinal training accuracy: {:.2f}%".format(
+        history.history['accuracy'][-1] * 100))
+    print("Final validation accuracy: {:.2f}%".format(
+        history.history['val_accuracy'][-1] * 100))
 
 
 def argparse_init() -> argparse.ArgumentParser:
@@ -160,5 +166,3 @@ if __name__ == '__main__':
         pass
     except Exception as err:
         print(err)
-
-

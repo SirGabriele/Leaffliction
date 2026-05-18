@@ -15,6 +15,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
+
 def is_single_file_mode(len_argv: int):
     return len_argv == 2
 
@@ -24,7 +25,8 @@ def argparse_init() -> argparse.ArgumentParser:
         prog="Transformation.py",
         epilog="Usage examples :\n"
                "  python Transformation.py image.jpg\n"
-               "  python Transformation.py -src input_dir -dst output_dir --mask -b",
+               "  python Transformation.py -src input_dir -dst output_dir "
+               "--mask -b",
         formatter_class=argparse.RawTextHelpFormatter
     )
 
@@ -46,13 +48,17 @@ def argparse_init() -> argparse.ArgumentParser:
     parser.add_argument("-s", "--saturation", action="store_true",
                         help="Apply saturation to the image transformation")
     parser.add_argument('-r', '--roi', action="store_true",
-                        help="Apply region of interest to the image transformation")
+                        help="Apply region of interest to the image "
+                             "transformation")
     parser.add_argument('-a', '--analysis', action="store_true",
                         help="Apply analysis to the image transformation")
-    parser.add_argument('-p', '--pseudolandmark', action="store_true",
-                        help="Apply pseudolandmark to the image transformation")
+    parser.add_argument('-p', '--pseudolandmark',
+                        action="store_true",
+                        help="Apply pseudolandmark to the image"
+                             " transformation")
     parser.add_argument('-e', '--edges', action="store_true",
-                        help="Apply edges detection to the image transformation")
+                        help="Apply edges detection to the image "
+                             "transformation")
     parser.add_argument('-b', '--background', action="store_true",
                         help="Apply background removal transformation")
     return parser
@@ -62,14 +68,17 @@ def validate_arguments_or_fail(args: argparse.Namespace,
                                parser: argparse.ArgumentParser) -> None:
     if args.image_file and (args.source or args.destination):
         parser.error(
-            "You cannot provide both an image file and source/destination directories.")
+            "You cannot provide both an image file and source/destination"
+            " directories.")
     if (not args.destination and args.source) or (
             args.destination and not args.source):
         parser.error(
-            "Both source and destination directories must be provided together.")
+            "Both source and destination directories must be provided "
+            "together.")
     if not args.image_file and not (args.source and args.destination):
         parser.error(
-            "You must provide either a single image file or both source and destination directories.")
+            "You must provide either a single image file or both source and "
+            "destination directories.")
 
 
 def process_single_image_worker(rel_path: Path, source: Path,
@@ -119,9 +128,11 @@ def handle_single_file_mode(
     display_images(image, transformed_images)
 
 
-def handle_batch_mode(source_path: Path, dest_path: Path, transform_params: dict) -> None:
+def handle_batch_mode(source_path: Path, dest_path: Path,
+                      transform_params: dict) -> None:
     print(
-        f"Batch mode :\n\t- Source = {source_path}\n\t- Destination = {dest_path}")
+        f"Batch mode :\n\t- Source = {source_path}\n\t- Destination "
+        f"= {dest_path}")
     valid_extensions = {'.jpg', '.jpeg', '.png'}
     if not os.path.isdir(dest_path):
         Path(dest_path).mkdir(parents=True, exist_ok=True)
@@ -167,7 +178,8 @@ def main():
         handle_single_file_mode(args.image_file, transform_params,
                                 print_info=True)
     else:
-        handle_batch_mode(Path(args.source), args.destination, transform_params)
+        handle_batch_mode(Path(args.source), args.destination,
+                          transform_params)
 
 
 if __name__ == '__main__':

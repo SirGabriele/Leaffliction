@@ -25,11 +25,12 @@ def main():
     root_directory: Path = Path(root_directory_name)
 
     count_images_dir = count_images(root_directory)
-    if not count_images_dir :
+    if not count_images_dir:
         print("No subdirectory containing JPG images_dir found.")
         return
 
-    plot_charts(root_directory_name, list(count_images_dir.keys()), list(count_images_dir.values()))
+    plot_charts(root_directory_name, list(count_images_dir.keys()),
+                list(count_images_dir.values()))
 
 
 if __name__ == '__main__':
