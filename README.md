@@ -92,3 +92,55 @@ $ ./venv/bin/python3.10 Transformation.py -src <source_directory> -dst <destinat
 ```bash
 $ ./venv/bin/python3.10 Transformation.py -src images/ -dst transformed_data/ --mask --edges
 ```
+
+# Classification
+
+## Training
+
+The training program takes a directory of labelled images (one subdirectory per class) and runs the following pipeline:
+
+1. **Balancing** — copies all images into a `balanced_images/` directory and augments under-represented classes until each reaches a target of 2000 images.
+2. **Transformation** — applies background removal to every image and saves the results in a `transformation_images/` directory.
+3. **Training** — trains a CNN on the transformed images for 30 epochs with an 80/20 train/validation split.
+4. **Saving** — writes the trained model to `leaf_model.keras`, the class labels to `class_names.json`, and packages everything into `training_results.zip`.
+
+Training parameters are configurable in `config.py`:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `IMAGE_SIZE` | `(128, 128)` | Input image resolution |
+| `BATCH_SIZE` | `32` | Mini-batch size |
+| `CONV_FILTERS` | `(32, 64, 128)` | Filters per Conv2D layer |
+| `DENSE_UNITS` | `128` | Units in the fully-connected layer |
+
+```bash
+$ venv/bin/python3.10 train.py <data_set_directory>
+```
+
+### Model architecture
+
+```
+Input (128×128 RGB)
+└── Rescaling (÷255)
+└── Conv2D(32, 3×3, relu) → MaxPooling2D(2×2)
+└── Conv2D(64, 3×3, relu) → MaxPooling2D(2×2)
+└── Conv2D(128, 3×3, relu) → MaxPooling2D(2×2)
+└── Flatten
+└── Dense(128, relu)
+└── Dropout(0.5)
+└── Dense(N classes, softmax)
+```
+
+Optimizer: **Adam** | Loss: **sparse categorical crossentropy** | Epochs: **30**
+
+The validation set represents 20% of the data and achieves above 90% accuracy.
+
+## Prediction
+
+The prediction program loads the saved model and classifies a single image. It displays the original image alongside the background-removed version, and prints the predicted disease class below both images.
+
+```bash
+$ venv/bin/python3.10 predict.py <image_file>
+```
+
+![Prediction output](resource/prediction.png)

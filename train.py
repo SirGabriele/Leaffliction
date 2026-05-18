@@ -8,16 +8,12 @@ import argparse
 from typing import Tuple
 from tensorflow.keras import Sequential, layers
 
+from config import AUGMENTED_DIR, IMAGE_SIZE, BATCH_SIZE, DENSE_UNITS, \
+    CONV_FILTERS, BALANCED_DIR
 from source.augment_image import augment_image
 from source.utils.existing_directory import existing_directory
 from Transformation import handle_batch_mode
 
-IMAGE_SIZE = (128, 128)
-BATCH_SIZE = 32
-DENSE_UNITS = 128
-CONV_FILTERS = (32, 64, 128)
-BALANCED_DIR = "balanced_images"
-AUGMENTED_DIR = "transformation_images"
 
 def _transform_and_load_dataset(dataset_path: Path) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     handle_batch_mode(dataset_path, Path(AUGMENTED_DIR), {"background_removal": True})
