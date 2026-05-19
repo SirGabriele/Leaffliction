@@ -85,7 +85,8 @@ def _balance_dataset(images_folder: Path) -> Path:
         print(f"--- Category: {cat_name} ({count} images) ---")
 
         if count >= NB_IMG_PER_FOLDER:
-            print(f"Too many or enough images. Copying first {NB_IMG_PER_FOLDER}...")
+            print(f"Too many or enough images. Copying first "
+                  f"{NB_IMG_PER_FOLDER}...")
             for img in images[:NB_IMG_PER_FOLDER]:
                 shutil.copy2(img, dest_dir / img.name)
         else:

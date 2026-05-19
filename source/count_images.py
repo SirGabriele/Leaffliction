@@ -8,7 +8,7 @@ def count_images(root_directory: Path) -> dict[str, int]:
         if subdir.is_dir():
             images: list[Path] = [
                 f for f in subdir.iterdir()
-                if f.suffix.lower() == ".jpg"
+                if f.suffix.lower() == ".jpg" or f.suffix.lower() == ".png"
             ]
 
             if images:
