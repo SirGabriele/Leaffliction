@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 from config import FLIP_ROTATION_AXIS
 from source.generate_augmented_file_name import generate_augmented_file_name
-from source.save_image import save_image_in_augmented_directory
+from source.save_image import save_image_in_directory
 
 
 def flip(augmented_directory: Path, image_file_path: Path,
@@ -16,7 +16,7 @@ def flip(augmented_directory: Path, image_file_path: Path,
         filter_suffix="Flip"
     )
 
-    save_image_in_augmented_directory(
+    save_image_in_directory(
         augmented_directory, image_file_path, flipped_image
     )
 

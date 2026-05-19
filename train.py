@@ -3,12 +3,14 @@ import multiprocessing
 import shutil
 from concurrent.futures.process import ProcessPoolExecutor
 from pathlib import Path
+
+import math
 import tensorflow as tf
 import argparse
 from typing import Tuple
 from tensorflow.keras import Sequential, layers
 
-from config import AUGMENTED_DIR, IMAGE_SIZE, BATCH_SIZE, DENSE_UNITS, \
+from config import TRANSFORMED_DIR, IMAGE_SIZE, BATCH_SIZE, DENSE_UNITS, \
     CONV_FILTERS, BALANCED_DIR, NB_IMG_PER_FOLDER
 from source.augment_image import augment_image
 from source.utils.existing_directory import existing_directory
@@ -17,11 +19,11 @@ from Transformation import handle_batch_mode
 
 def _transform_and_load_dataset(dataset_path: Path) \
         -> Tuple[tf.data.Dataset, tf.data.Dataset]:
-    handle_batch_mode(dataset_path, Path(AUGMENTED_DIR),
+    handle_batch_mode(dataset_path, Path(TRANSFORMED_DIR),
                       {"background_removal": True})
     return [
         tf.keras.utils.image_dataset_from_directory(
-            AUGMENTED_DIR,
+            TRANSFORMED_DIR,
             validation_split=0.2,
             subset="training",
             seed=123,
@@ -29,7 +31,7 @@ def _transform_and_load_dataset(dataset_path: Path) \
             batch_size=BATCH_SIZE
         ),
         tf.keras.utils.image_dataset_from_directory(
-            AUGMENTED_DIR,
+            TRANSFORMED_DIR,
             validation_split=0.2,
             subset="validation",
             seed=123,
@@ -84,38 +86,81 @@ def _balance_dataset(images_folder: Path) -> Path:
 
         print(f"--- Category: {cat_name} ({count} images) ---")
 
+        if count == 0:
+            continue
+
         if count >= NB_IMG_PER_FOLDER:
-            print(f"Too many or enough images. Copying first "
-                  f"{NB_IMG_PER_FOLDER}...")
+            print(
+                f"Too many or enough images. Copying "
+                f"first {NB_IMG_PER_FOLDER}...")
             for img in images[:NB_IMG_PER_FOLDER]:
                 shutil.copy2(img, dest_dir / img.name)
         else:
-            print(
-                f"Not enough images. Copying all ({count}) and augmenting...")
-            copied_images = []
+            print(f"Not enough images. Copying originals ({count})...")
             for img in images:
-                dest_file = dest_dir / img.name
-                shutil.copy2(img, dest_file)
-                copied_images.append(dest_file)
+                shutil.copy2(img, dest_dir / img.name)
 
-            needed = NB_IMG_PER_FOLDER - count
-            runs = (needed + 5) // 6
+            already_augmented_images: set[str] = set()
 
-            num_to_augment = len(copied_images)
-            if num_to_augment > 0:
-                print(f"Starting {runs} augmentations...")
-                tasks = [copied_images[i % num_to_augment] for i in
-                         range(runs)]
+            while True:
+                all_images = [f for f in dest_dir.iterdir() if
+                              f.is_file() and f.suffix.lower() in {'.jpg',
+                                                                   '.jpeg',
+                                                                   '.png'}]
+                total_count = len(all_images)
+
+                if total_count >= NB_IMG_PER_FOLDER:
+                    break
+
+                available_images = [img for img in all_images if
+                                    img.name not in already_augmented_images]
+
+                needed = NB_IMG_PER_FOLDER - total_count
+                runs_needed = math.ceil(needed / 6)
+
+                runs_to_run = min(runs_needed, len(available_images))
+
+                print(
+                    f"Current count: {total_count}/{NB_IMG_PER_FOLDER}."
+                    f" Running {runs_to_run} parallel augmentations...")
 
                 with ProcessPoolExecutor(
                         max_workers=multiprocessing.cpu_count()) as executor:
-                    executor.map(augment_image, tasks)
+                    for i in range(runs_to_run):
+                        task_img = available_images[i]
+                        already_augmented_images.add(task_img.name)
+                        executor.submit(augment_image, task_img, dest_dir)
+
+            final_images = [f for f in dest_dir.iterdir() if
+                            f.is_file() and f.suffix.lower() in {'.jpg',
+                                                                 '.jpeg',
+                                                                 '.png'}]
+            if len(final_images) > NB_IMG_PER_FOLDER:
+                surplus = len(final_images) - NB_IMG_PER_FOLDER
+                print(
+                    f"Removing {surplus} surplus images for exact balance...")
+                final_images.sort()
+                for img_to_remove in final_images[-surplus:]:
+                    img_to_remove.unlink()
 
     print(f"--- Done! Check the '{BALANCED_DIR}' folder. ---")
     return Path(BALANCED_DIR)
 
 
 def train(images_folder: Path):
+    error = False
+    if Path(TRANSFORMED_DIR).exists():
+        print(
+            f"--- Please delete {TRANSFORMED_DIR} folder before "
+            f"proceeding. ---")
+        error = True
+    if Path(BALANCED_DIR).exists():
+        print(
+            f"--- Please delete {BALANCED_DIR} folder before proceeding. ---")
+        error = True
+    if error:
+        exit(1)
+
     balanced_images_folder = _balance_dataset(images_folder)
     train_ds, val_ds = _transform_and_load_dataset(balanced_images_folder)
 

@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 from config import ROTATION_ANGLE
 from source.generate_augmented_file_name import generate_augmented_file_name
-from source.save_image import save_image_in_augmented_directory
+from source.save_image import save_image_in_directory
 
 
 def rotate(augmented_directory: Path, image_file_path: Path,
@@ -21,7 +21,7 @@ def rotate(augmented_directory: Path, image_file_path: Path,
         filter_suffix="Rotate"
     )
 
-    save_image_in_augmented_directory(
+    save_image_in_directory(
         augmented_directory, image_file_path, rotated_image
     )
 

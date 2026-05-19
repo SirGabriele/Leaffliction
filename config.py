@@ -43,5 +43,5 @@ BATCH_SIZE = 32
 DENSE_UNITS = 128
 CONV_FILTERS = (32, 64, 128)
 BALANCED_DIR = "balanced_images"
-AUGMENTED_DIR = "transformation_images"
-NB_IMG_PER_FOLDER = 20
+TRANSFORMED_DIR = "transformation_images"
+NB_IMG_PER_FOLDER = 2000

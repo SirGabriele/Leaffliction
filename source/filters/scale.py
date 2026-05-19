@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 from config import SCALE_FACTOR
 from source.generate_augmented_file_name import generate_augmented_file_name
-from source.save_image import save_image_in_augmented_directory
+from source.save_image import save_image_in_directory
 
 
 def scale(augmented_directory: Path, image_file_path: Path,
@@ -50,7 +50,7 @@ def scale(augmented_directory: Path, image_file_path: Path,
         filter_suffix="Scale"
     )
 
-    save_image_in_augmented_directory(
+    save_image_in_directory(
         augmented_directory, image_file_path, cropped_image
     )
 

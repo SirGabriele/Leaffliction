@@ -14,7 +14,7 @@ from source.filters.illuminate import illuminate
 from source.filters.rotate import rotate
 from source.filters.scale import scale
 from source.load_image import load_image
-from source.save_image import save_image_in_augmented_directory
+from source.save_image import save_image_in_directory
 
 
 def display_images(original_img: np.ndarray,
@@ -45,23 +45,25 @@ def display_images(original_img: np.ndarray,
     plt.show()
 
 
-def augment_image(image_file_path: Path, display: bool = False):
-    augmented_directory: Path = create_augmented_directory(image_file_path)
+def augment_image(image_file_path: Path, dst_directory: Path | None = None,
+                  display: bool = False):
+    if dst_directory is None:
+        dst_directory = create_augmented_directory(image_file_path)
 
     image: np.ndarray = load_image(image_file_path)
 
     augmented_imgs: dict[str, np.ndarray] = {
-        "Blur": blur(augmented_directory, image_file_path, image),
-        "Flip": flip(augmented_directory, image_file_path, image),
-        "Scaling": scale(augmented_directory, image_file_path, image),
-        "Rotation": rotate(augmented_directory, image_file_path, image),
-        "Illumination": illuminate(augmented_directory, image_file_path,
+        "Blur": blur(dst_directory, image_file_path, image),
+        "Flip": flip(dst_directory, image_file_path, image),
+        "Scaling": scale(dst_directory, image_file_path, image),
+        "Rotation": rotate(dst_directory, image_file_path, image),
+        "Illumination": illuminate(dst_directory, image_file_path,
                                    image),
-        "Projection": project(augmented_directory, image_file_path, image)
+        "Projection": project(dst_directory, image_file_path, image)
     }
 
-    save_image_in_augmented_directory(
-        augmented_directory, image_file_path, image
+    save_image_in_directory(
+        dst_directory, image_file_path, image
     )
 
     if display and DISPLAY_AUGMENTED_IMAGES:
